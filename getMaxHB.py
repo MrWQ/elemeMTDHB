@@ -53,6 +53,9 @@ def getOne(db,id,url):
             # 打印已经领取 的数目
             array_length = len(arrary)
             print('当前已经领取的数目：' + str(array_length))
+            #打印红包类型
+            HBtype = re_json_dict['promotion_items'][0]['name']
+            print("当前红包类型：",HBtype)
         else:
             array_length = -1
             message = re_json_dict['message']

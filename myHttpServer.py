@@ -1,5 +1,5 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
-import json
+import json,MySQL
 
 data = {'result': 'hello'}
 host = ('localhost', 8888)
@@ -17,7 +17,11 @@ class Resquest(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
         self.end_headers()
-        self.wfile.write('post'.encode())
+        self.wfile.write('000'.encode())
+        # 获取db对象
+        db = MySQL.creatDBObject()
+        cookieObj = MySQL.selectCookieObjectById(db, 1)
+        self.wfile.write(cookieObj.cookie.encode())
         # self.wfile.write(att.encode())
 
 
