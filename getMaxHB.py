@@ -1,0 +1,106 @@
+import requests
+import time,threading
+import MySQL
+import repy
+import json
+
+
+
+# 用一个小号领取一个
+def getOne(db,id,url):
+    headers = {'User-Agent':'Mozilla/5.0 (Linux; Android 5.1; m1 metal Build/LMY47I; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/53.0.2785.49 Mobile MQQBrowser/6.2 TBS/043409 Safari/537.36 V1ANDSQ7.2.5744YYBD QQ/7.2.5.3305 NetType/WIFI WebP/0.3.0 Pixel/1080'}
+    # url = input("输入饿了么红包链接：")
+    jurl = "https://h5.ele.me/restapi/marketing/promotion/weixin/"
+    jsons = {'group_sn':'','sign':'','weixin_avatar':'http://thirdqq.qlogo.cn/qqapp/101204453/6409FAE1CEA4B1A50F8A85B8DFDA7236/40','weixin_username':'BISTU','method':'phone'}
+    cookiedict = {'_utrace': '', 'ubt_ssid': '', 'perf_ssid': '', 'snsInfo[101204453]': '', 'SID': ''}
+
+    # 获取一个cookie
+    cookie = MySQL.selectCookieObjectById(db, id)
+    # 如果获取到的为None 说明数据获取不到
+    if (cookie == None) :
+        return None
+    else:
+        # cookie2 = copy.copy(cookie)
+        # 补全jurl
+        jurl = jurl + cookie.jurl
+        # 补全json字典
+        jsons['group_sn'] = repy.isSN(url)
+        jsons['sign'] = cookie.sign
+        # 补全cookie字典
+        # cookiedict = connect.cookieOejectToDictionary(cookie2)
+        cookiedict['_utrace'] = cookie.utrance
+        cookiedict['ubt_ssid'] = cookie.ubt_ssid
+        cookiedict['perf_ssid'] = cookie.perf_ssid
+        cookiedict['snsInfo[101204453]'] = cookie.info
+        cookiedict['SID'] = cookie.SID
+        # 领取红包
+        s=requests.session()
+        # 设置代理
+        # s.proxies = {'http': '121.193.143.249:80'}
+        # s.proxies = {'http':'127.0.0.1:8888'}
+        re = s.post(url=jurl,headers=headers,cookies=cookiedict,verify=False,json=jsons)
+        # 打印返回的json对象
+        re_json = re.content.decode()
+        # print(re_json)
+        # json对象解析为字典
+        re_json_dict = json.loads(re_json)
+        # print(len(re_json_dict))
+        # 返回json长度为2 表示输入手机号，正常的json数据长度是8
+        if (len(re_json_dict) != 2):
+        # print(re_json_dict)
+        # print(re_json_dict['promotion_records'])
+            arrary = re_json_dict['promotion_records']
+            # 打印已经领取 的数目
+            array_length = len(arrary)
+            print('当前已经领取的数目：' + str(array_length))
+        else:
+            array_length = -1
+            message = re_json_dict['message']
+            print("返回json错误：" + message)
+            print("当前cookieid："+ str(id))
+        return int(array_length)
+
+# 领取到最佳前一个 主函数
+def getHB(url):
+    luck_number = repy.isLuckNumber(url)
+    print('最佳手气所在数目： ' + luck_number)
+    # 获取db对象
+    db = MySQL.creatDBObject()
+    # 领取控制逻辑
+    # 遍历数据库数据，直到能领到的最佳手气的前面一个
+    # 用第一条cookie获取已经领取的数目
+    id = 1
+    arrayLength = getOne(db, id, url)
+    if (arrayLength != None):
+        # 数组长度 表示已经领取的数目
+
+        if (arrayLength >= int(luck_number)):
+            print("最佳手气已经被领取")
+        elif (arrayLength == -1):
+            print("cookie验证失败")
+        else:
+            lastId = MySQL.selectLastCookieId(db)
+            leastOfLuckNumber = int(luck_number) - 1
+            while (arrayLength < leastOfLuckNumber):
+                # 获取当前线程实例
+                # thread = threading.current_thread()
+                # 当前线程休眠一秒
+                time.sleep(0.5)
+                # 判断小号是否已经用完
+                if (id < lastId):
+                    id = id + 1
+                    arrayLength = getOne(db, id, url)
+                else:
+                    print("今天小号已经全部用完")
+                    db.close()
+                    break
+                # 判断是否到最佳手气
+                if (arrayLength == leastOfLuckNumber):
+                    print("已经领取到最佳手气的前面一个")
+                    db.close()
+                    break
+
+    else:
+        print("程序出错，不能获取到cookie")
+
+
