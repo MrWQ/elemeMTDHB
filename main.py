@@ -8,21 +8,18 @@ if __name__ == '__main__':
    print("4：查询指定id的cookie")
    number = input("输入数字：")
    number = int(number)
+   # 获取db对象
+   db = MySQL.creatDBObject()
    if(number == 1):
        url = input("输入饿了么红包链接：")
-       getMaxHB.getHB(url)
+       getMaxHB.getMAXHB(db,url)
    elif(number == 2):
        cookiestr = input("输入cookie（字符串,注意结尾要加上英文分号;）：")
        # 没有加cookie验证，因为自用肯定能输入正确cookie
-
-       # 获取db对象
-       db = MySQL.creatDBObject()
-       MySQL.insertcookie(db, cookiestr)
+       MySQL.insertcookie(db=db,cookiestr=cookiestr)
    elif(number == 3):
        uid = input("输入要更新的id：")
        uid =int(uid)
-       # 获取db对象
-       db = MySQL.creatDBObject()
        maxId = MySQL.selectLastCookieId(db)
        maxId = int(maxId)
        if(uid > maxId):
@@ -34,8 +31,6 @@ if __name__ == '__main__':
    elif(number == 4):
        uid = input("输入要查询的id：")
        uid = int(uid)
-       # 获取db对象
-       db = MySQL.creatDBObject()
        maxId = MySQL.selectLastCookieId(db)
        maxId = int(maxId)
        if (uid > int(maxId)):

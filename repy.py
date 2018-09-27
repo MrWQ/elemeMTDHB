@@ -5,7 +5,7 @@ import json
 
 # 返回sn字符串 group_sn
 def isSN(url):
-    pattern = re.compile(r'&sn=(.*?)&theme_id', re.S)
+    pattern = re.compile(r'&sn=(.*?)&', re.S)
     sn = re.findall(pattern, url)
     for i in sn:
         sn = i
