@@ -1,5 +1,5 @@
 import re
-import urllib.parse
+import requests
 import json
 
 
@@ -20,6 +20,13 @@ def isLuckNumber(url):
     for i in lucknumber:
         lucknumber = i
     if lucknumber:
+        if lucknumber == 0 or lucknumber == '0':
+            group_sn = isSN(url)
+            luck_url = "https://h5.ele.me/restapi/marketing/themes/3137/group_sns/"
+            luck_url = luck_url + group_sn
+            lucknumber = requests.get(luck_url).content.decode()
+            lucknumber_dict = json.loads(lucknumber)
+            lucknumber = lucknumber_dict['lucky_number']
         return lucknumber
     else:
         return None
@@ -100,15 +107,16 @@ cookiestr2 = "_utrace=34c6159ebb5925ef62e8c5b71cfdb418_2018-09-13; SID=jTJ2oix54
 cookiestr3 = " perf_ssid=n3q7sa1ti78i7oyafmfj7ktaw5hr49rp_2018-09-14; ubt_ssid=f2q2pf409otnc545sdu51b4f7gi6bg1m_2018-09-14; _utrace=b34ba18f0bde8eb2b4a78d65fcdb8f22_2018-09-14; snsInfo[101204453]=%7B%22city%22%3A%22%E4%BF%9D%E5%AE%9A%22%2C%22constellation%22%3A%22%22%2C%22eleme_key%22%3A%220ae0652d6428f7ebcc00177cfb7846a8%22%2C%22figureurl%22%3A%22http%3A%2F%2Fqzapp.qlogo.cn%2Fqzapp%2F101204453%2FE5F3B3E35AE97161E2D61A2A4EC29E82%2F30%22%2C%22figureurl_1%22%3A%22http%3A%2F%2Fqzapp.qlogo.cn%2Fqzapp%2F101204453%2FE5F3B3E35AE97161E2D61A2A4EC29E82%2F50%22%2C%22figureurl_2%22%3A%22http%3A%2F%2Fqzapp.qlogo.cn%2Fqzapp%2F101204453%2FE5F3B3E35AE97161E2D61A2A4EC29E82%2F100%22%2C%22figureurl_qq_1%22%3A%22http%3A%2F%2Fthirdqq.qlogo.cn%2Fqqapp%2F101204453%2FE5F3B3E35AE97161E2D61A2A4EC29E82%2F40%22%2C%22figureurl_qq_2%22%3A%22http%3A%2F%2Fthirdqq.qlogo.cn%2Fqqapp%2F101204453%2FE5F3B3E35AE97161E2D61A2A4EC29E82%2F100%22%2C%22gender%22%3A%22%E5%A5%B3%22%2C%22is_lost%22%3A0%2C%22is_yellow_vip%22%3A%220%22%2C%22is_yellow_year_vip%22%3A%220%22%2C%22level%22%3A%220%22%2C%22msg%22%3A%22%22%2C%22nickname%22%3A%22NewWorld%22%2C%22openid%22%3A%22E5F3B3E35AE97161E2D61A2A4EC29E82%22%2C%22province%22%3A%22%E6%B2%B3%E5%8C%97%22%2C%22ret%22%3A0%2C%22vip%22%3A%220%22%2C%22year%22%3A%221998%22%2C%22yellow_vip_level%22%3A%220%22%2C%22name%22%3A%22NewWorld%22%2C%22avatar%22%3A%22http%3A%2F%2Fthirdqq.qlogo.cn%2Fqqapp%2F101204453%2FE5F3B3E35AE97161E2D61A2A4EC29E82%2F40%22%7D; track_id=1536905892|b6f0b6a693fcc004bdb3c1887271b224e9d7ae175aeea9f2ec|3942154c09246adea0671bf198895446; USERID=1596632313; SID=boXADXWXqZPIO3i32VBGUq6iEOuY76VTopIA;"
 
 if __name__=='__main__':
-    print(isJurl(cookiestr3))
-    print(len(isJurl(cookiestr3)))
-    print(iselemekey(cookiestr3))
-    print(len(iselemekey(cookiestr3)))
-    print(is_utrace(cookiestr3))
-    print(len(is_utrace(cookiestr3)))
-    print(isUbt_ssid(cookiestr3))
-    print(isPerf_ssid(cookiestr3))
-    print(isSID(cookiestr3))
-    print(len(isSID(cookiestr3)))
-
+    # print(isJurl(cookiestr3))
+    # print(len(isJurl(cookiestr3)))
+    # print(iselemekey(cookiestr3))
+    # print(len(iselemekey(cookiestr3)))
+    # print(is_utrace(cookiestr3))
+    # print(len(is_utrace(cookiestr3)))
+    # print(isUbt_ssid(cookiestr3))
+    # print(isPerf_ssid(cookiestr3))
+    # print(isSID(cookiestr3))
+    # print(len(isSID(cookiestr3)))
+    url = "https://h5.ele.me/hongbao/#hardware_id=&is_lucky_group=True&lucky_number=0&track_id=&platform=0&sn=110471665005bcad&theme_id=3137&device_id=&refer_user_id=437980722"
+    print(isLuckNumber(url))
 

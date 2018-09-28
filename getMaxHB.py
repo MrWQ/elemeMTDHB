@@ -19,7 +19,8 @@ def getOne(db,id,url):
         # url = input("输入饿了么红包链接：")
         jurl = "https://h5.ele.me/restapi/marketing/promotion/weixin/"
         jsons = {'group_sn':'','sign':'','weixin_avatar':'http://thirdqq.qlogo.cn/qqapp/101204453/6409FAE1CEA4B1A50F8A85B8DFDA7236/40','weixin_username':'BISTU','method':'phone'}
-        cookiedict = {'_utrace': '', 'ubt_ssid': '', 'perf_ssid': '', 'snsInfo[101204453]': '', 'SID': ''}
+        # cookiedict = {'_utrace': '', 'ubt_ssid': '', 'perf_ssid': '', 'snsInfo[101204453]': '', 'SID': ''}
+        cookiedict = {'snsInfo[101204453]': '', 'SID': ''}
 
         # 获取一个cookie
         cookie = MySQL.selectCookieObjectById(db, id)
@@ -36,9 +37,9 @@ def getOne(db,id,url):
             jsons['sign'] = cookie.sign
             # 补全cookie字典
             # cookiedict = connect.cookieOejectToDictionary(cookie2)
-            cookiedict['_utrace'] = cookie.utrance
-            cookiedict['ubt_ssid'] = cookie.ubt_ssid
-            cookiedict['perf_ssid'] = cookie.perf_ssid
+            # cookiedict['_utrace'] = cookie.utrance
+            # cookiedict['ubt_ssid'] = cookie.ubt_ssid
+            # cookiedict['perf_ssid'] = cookie.perf_ssid
             cookiedict['snsInfo[101204453]'] = cookie.info
             cookiedict['SID'] = cookie.SID
 
@@ -62,14 +63,18 @@ def getOne(db,id,url):
                 arrary = re_json_dict['promotion_records']
                 # 打印已经领取 的数目
                 array_length = len(arrary)
-                if array_length == 0:
-                    print("红包已失效")
-                    return
+                # if array_length == 0:
+                #     print("红包已失效")
+                #     return
                 print('当前已经领取的数目：' + str(array_length))
                 #打印红包类型
-                HBtype = re_json_dict['promotion_items'][0]['name']
-                print("当前红包类型：", HBtype)
-
+                HBtype_array = re_json_dict['promotion_items']
+                # HBtype_array = HBtype_array[0]
+                if HBtype_array != []:
+                    HBtype = HBtype_array[0]['name']
+                    print("当前红包类型：", HBtype)
+                else:
+                    print("类型未知 --- 当前小号未领取到红包")
             else:
                 array_length = -1
                 message = re_json_dict['message']
@@ -84,7 +89,7 @@ def getMAXHB(db,url):
 
     # 获取最佳手气位置
     luck_number = repy.isLuckNumber(url)
-    print('最佳手气所在数目： ' + luck_number)
+    print('最佳手气所在数目： ' + str(luck_number))
 
     # 领取控制逻辑
     # 遍历数据库数据，直到能领到的最佳手气的前面一个
@@ -117,11 +122,12 @@ def getMAXHB(db,url):
                 # 判断是否到最佳手气
                 if (arrayLength == leastOfLuckNumber):
                     print("已经领取到最佳手气的前面一个")
-                    
+                    # 将该链接加入黑名单
+                    MySQL.insertSNtoBlack_SN(db, url)
                     break
 
         # 将该链接加入黑名单
-        MySQL.insertSNtoBlack_SN(db, url)
+        # MySQL.insertSNtoBlack_SN(db, url)
         db.close()
     else:
         print("领取失败")
