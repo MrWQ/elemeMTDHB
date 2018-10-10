@@ -28,7 +28,10 @@ def isLuckNumber(url):
             luck_url = luck_url + '/group_sns/' + group_sn
             lucknumber = requests.get(luck_url).content.decode()
             lucknumber_dict = json.loads(lucknumber)
-            lucknumber = lucknumber_dict['lucky_number']
+            try:
+                lucknumber = lucknumber_dict['lucky_number']
+            except:
+                print("获取lucknumber失败，红包链接不正确")
         return lucknumber
     else:
         return None

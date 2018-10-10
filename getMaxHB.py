@@ -6,7 +6,7 @@ import json
 
 
 
-# 用一个小号领取一个
+# 用一个小号领取一个 使用不定长参数，这样可选参数传递
 def getOne(db,id,url):
     # # 先判断url是否在黑名单中
     # # 如果在黑名单中
@@ -33,7 +33,12 @@ def getOne(db,id,url):
         # 补全jurl
         jurl = jurl + cookie.jurl
         # 补全json字典
-        jsons['group_sn'] = repy.isSN(url)
+        # 如果传入url参数
+        # if vardict['url']:
+        jsons['group_sn'] = repy.isSN(url=url)
+        # 如果传入groupsn参数
+        # if vardict['groupsn']:
+        #     jsons['group_sn'] = vardict['groupsn']
         jsons['sign'] = cookie.sign
         # 补全cookie字典
         # cookiedict = connect.cookieOejectToDictionary(cookie2)
@@ -82,11 +87,8 @@ def getOne(db,id,url):
             print("当前cookieid："+ str(id))
         return int(array_length)
 
-# 领取到最佳前一个 主函数
-def getMAXHB(db,url):
-    # 获取db对象
-    # db = MySQL.creatDBObject()
-
+# 传入url领取最大
+def getMAXHBbyURL(db,url):
     # 获取最佳手气位置
     luck_number = repy.isLuckNumber(url)
     if luck_number != None:
@@ -143,3 +145,30 @@ def getMAXHB(db,url):
             print("领取失败")
 
 
+# 领取到最佳前一个 主函数
+def getMAXHB(db,**vardict):
+    # 获取db对象
+    # db = MySQL.creatDBObject()
+
+    # 如果传入groupsn参数
+    if vardict['groupsn']:
+        url = "https://h5.ele.me/hongbao/#hardware_id=&is_lucky_group=True&lucky_number=0&track_id=&platform=0&sn="
+        # groupsn中需要包含theme_id
+        url = url + vardict['groupsn'] +'&'
+        theme_id = repy.isTheme_id(url)
+        if theme_id:
+            pass
+        else:
+            theme_id = input('theme_id 不存在，请输入theme_id（不知道就输入1234）：')
+            url = url + '&theme_id=' + str(theme_id) + "&"
+    # 如果传入url参数
+    if vardict['url']:
+        url = vardict['url']
+    #    通过url领取最大
+    getMAXHBbyURL(db,url)
+
+
+if __name__ =='__main__':
+    db= MySQL.creatDBObject()
+    groupsn = '110675bc6e049c10'
+    getMAXHB(db,groupsn=groupsn,url=None)

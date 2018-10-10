@@ -2,26 +2,30 @@
 import getMaxHB
 
 if __name__ == '__main__':
-   print("1：领取到最佳手气前一个")
-   print("2：插入一条cookie")
-   print("3：更新指定id的cookie（输入id和新的cookie字符串）")
-   print("4：查询指定id的cookie")
-   print("5：指定id的cookie领取大包")
-   print("6：输入cookiestr更新或者插入cookie")
-   print("7：根据url从黑名单删除")
-   print("8：根据groupsn从黑名单删除")
+   print("1：输入url领取到最佳手气前一个")
+   print("2：输入链接中的 sn 领取的最佳手气前一个")
+   print("3：插入一条cookie")
+   print("4：更新指定id的cookie（输入id和新的cookie字符串）")
+   print("5：查询指定id的cookie")
+   print("6：指定id的cookie领取大包")
+   print("7：输入cookiestr更新或者插入cookie")
+   print("8：根据url从黑名单删除")
+   print("9：根据groupsn从黑名单删除")
    number = input("输入数字：")
    number = int(number)
    # 获取db对象
    db = MySQL.creatDBObject()
    if(number == 1):
        url = input("输入饿了么红包链接：")
-       getMaxHB.getMAXHB(db,url)
-   elif(number == 2):
+       getMaxHB.getMAXHB(db,url=url,groupsn=None)
+   elif (number == 2):
+       groupsn = input("输入饿了么红包链接groupsn：")
+       getMaxHB.getMAXHB(db, groupsn=groupsn,url=None)
+   elif(number == 3):
        cookiestr = input("输入cookie（字符串,注意结尾要加上英文分号;）：")
        # 没有加cookie验证，因为自用肯定能输入正确cookie
        MySQL.insertcookie(db=db,cookiestr=cookiestr)
-   elif(number == 3):
+   elif(number == 4):
        uid = input("输入要更新的id：")
        uid =int(uid)
        maxId = MySQL.selectLastCookieId(db)
@@ -32,7 +36,7 @@ if __name__ == '__main__':
            cookiestr = input("输入cookie（字符串,注意结尾要加上英文分号;）：")
            MySQL.update_cookie(db, uid, cookiestr)
            MySQL.updateCookieById(db, uid, cookiestr)
-   elif(number == 4):
+   elif(number == 5):
        uid = input("输入要查询的id：")
        uid = int(uid)
        maxId = MySQL.selectLastCookieId(db)
@@ -50,7 +54,7 @@ if __name__ == '__main__':
            print("perf_ssid:" + cookieObj.perf_ssid)
            print("info:" + cookieObj.info)
            print("cookie:" + cookieObj.cookie)
-   elif (number == 5):
+   elif (number == 6):
        uid = input("输入要领大包的id：")
        uid = int(uid)
        maxId = MySQL.selectLastCookieId(db)
@@ -60,7 +64,7 @@ if __name__ == '__main__':
        else:
          url = input("输入饿了么红包链接：")
          getMaxHB.getOne(db=db,id=uid,url=url)
-   elif (number == 6):
+   elif (number == 7):
        cookiestr = input("输入cookie（字符串,注意结尾要加上英文分号;）：")
        # 获取db对象
        db = MySQL.creatDBObject()
@@ -88,12 +92,12 @@ if __name__ == '__main__':
            print('插入')
            # 没有加cookie验证，因为自用肯定能输入正确cookie
            MySQL.insertcookie(db=db, cookiestr=cookiestr)
-   elif (number == 7):
+   elif (number == 8):
        url = input("输入饿了么红包链接：")
        MySQL.selectIfInBlack_SNByUrl(db,url)
        groupsn = repy.isSN(url)
        MySQL.deleteIfInBlack_SN(db,groupsn)
-   elif (number == 8):
+   elif (number == 9):
        groupsn = input("输入红包链接 groupsn：")
        MySQL.selectIfInBlack_SN(db, groupsn)
        MySQL.deleteIfInBlack_SN(db,groupsn)
