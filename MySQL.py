@@ -7,6 +7,36 @@ def creatDBObject():
     db = pymysql.connect("localhost", "root", "431879", "mtdhb")
     return db
 
+# 执行查询sql，返回结果对象
+def exeSelectSql(db,sql):
+    # 使用cursor()方法获取操作游标
+    cursor = db.cursor()
+
+    # print(sql)
+    try:
+        # 执行SQL语句
+        cursor.execute(sql)
+        # 获取记录列表
+        results = cursor.fetchall()
+        return results
+    except:
+        return None
+        print("Error: exe sql error")
+
+# 执行非查询sql
+def exeNoSelectSql(db,sql):
+    # 使用cursor()方法获取操作游标
+    cursor = db.cursor()
+    try:
+        # 执行SQL语句
+        cursor.execute(sql)
+        # 执行sql语句
+        db.commit()
+        print("exe NoSelectSql success")
+    except:
+        # 发生错误时回滚
+        db.rollback()
+        print("exe NoSelectSql success error")
 
 # 根据id查询 返回cookie对象
 def selectCookieObjectById(db, id):
@@ -157,7 +187,6 @@ def update_cookie(db,id,cookiestr):
         db.rollback()
         print("update error")
 
-
 # 将红包链接的sn存数据库白名单
 # def insertSNtoWrite_SN(db,url):
 #     # 使用cursor()方法获取操作游标
@@ -181,6 +210,7 @@ def update_cookie(db,id,cookiestr):
 
 
 # 将红包链接的sn存数据库黑名单
+
 def insertSNtoBlack_SN(db,url):
     # 使用cursor()方法获取操作游标
     cursor = db.cursor()
@@ -203,22 +233,29 @@ def insertSNtoBlack_SN(db,url):
 
 
 # 查询红包sn是否在黑名单中
-def selectIfInBlack_SN(db, url):
+def selectIfInBlack_SNByUrl(db, url):
+
+    # 获得字段
+    SN = repy.isSN(url)
+    selectIfInBlack_SNBySN(db=db,groupsn=SN)
+
+# 查询红包sn是否在黑名单中 根据groupsn查询
+def selectIfInBlack_SNBySN(db,groupsn):
     # 使用cursor()方法获取操作游标
     cursor = db.cursor()
 
     # 获得字段
-    SN = repy.isSN(url)
+    SN = groupsn
 
     # SQL 插入语句
-    sql = "select * from BLACK_SN WHERE black_sn ='" + (SN) +"'"
+    sql = "select * from BLACK_SN WHERE black_sn ='" + (SN) + "'"
 
     try:
         # 执行SQL语句
         cursor.execute(sql)
         # 获取记录列表
         results = cursor.fetchall()
-        if(len(results) == 0):
+        if (len(results) == 0):
             print("该url不在黑名单中")
             return False
         else:
@@ -228,19 +265,22 @@ def selectIfInBlack_SN(db, url):
         return
         print("Error: unable to fetch data")
 
+# 根据删除黑名单中指定groupsn
+def deleteIfInBlack_SN(db,groupsn):
+    # 如果存在于黑名单，将其从黑名单删除
+    if selectIfInBlack_SNBySN(db=db,groupsn=groupsn) == True :
+        sql = "delete black_sn from black_sn where black_sn = '"+ str(groupsn) +"'"
+        try:
+            exeNoSelectSql(db,sql)
+            print("delete  success",groupsn)
+        except:
+            print("delete error")
+
 #避免让小号错误的领取到大包方法
 # 领取之前先判断是否在黑名单里，
 #   如果在黑名单，不领取
 #   如果不在 ，领取，并加入黑名单
 
 if __name__ == '__main__':
-
-    db =creatDBObject()
-    # # 根据cookie更新
-    # updateCookieByCookie(db,3)
-    url = "https://h5.ele.me/hongbao/#hardware_id=&is_lucky_group=True&lucky_number=9&track_id=&platform=0&sn=1100ddd2f9060c0c&theme_id=3049&device_id=&refer_user_id=232554299"
-    # url = "https://h5.ele.me/hongbao/#hardware_id=&is_lucky_group=True&lucky_number=10&track_id=&platform=0&sn=1100d5a16885cc39&theme_id=3049&device_id=&refer_user_id=268427146"
-    # insertSNtoBlack_SN(db,url)
-    print(selectIfInBlack_SN(db,url))
-    # insertSNtoWrite_SN(db,url)
-
+    db = creatDBObject()
+    deleteIfInBlack_SN(db,'1100d5a16885cc39')

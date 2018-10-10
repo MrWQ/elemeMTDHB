@@ -15,22 +15,33 @@ def isSN(url):
         return None
 # 返回luck_number字符串
 def isLuckNumber(url):
-    pattern = re.compile(r'lucky_number=(.*?)&track_id', re.S)
+    pattern = re.compile(r'lucky_number=(.*?)&', re.S)
     lucknumber = re.findall(pattern, url)
     for i in lucknumber:
         lucknumber = i
     if lucknumber:
         if lucknumber == 0 or lucknumber == '0':
             group_sn = isSN(url)
-            luck_url = "https://h5.ele.me/restapi/marketing/themes/3137/group_sns/"
-            luck_url = luck_url + group_sn
+            # luck_url = "https://h5.ele.me/restapi/marketing/themes/3137/group_sns/"
+            luck_url = "https://h5.ele.me/restapi/marketing/themes/"
+            luck_url = luck_url + isTheme_id(url)
+            luck_url = luck_url + '/group_sns/' + group_sn
             lucknumber = requests.get(luck_url).content.decode()
             lucknumber_dict = json.loads(lucknumber)
             lucknumber = lucknumber_dict['lucky_number']
         return lucknumber
     else:
         return None
-
+# 返回theme_id=2985
+def isTheme_id(url):
+    pattern = re.compile(r'&theme_id=(.*?)&', re.S)
+    sn = re.findall(pattern, url)
+    for i in sn:
+        sn = i
+    if sn :
+        return sn
+    else:
+        return None
 # 返回elemekey 字符串 即sign
 def iselemekey(cookiestr):
     pattern = re.compile(r'eleme_key%22%3A%22(.*?)%22%2C%22figureurl', re.S)
