@@ -7,9 +7,13 @@ import json
 def isSN(url):
     pattern = re.compile(r'&sn=(.*?)&', re.S)
     sn = re.findall(pattern, url)
-    for i in sn:
-        sn = i
-    if sn :
+    # 如果只有一个就返回一个sn的字符串，如果多个，就返回list
+    if len(sn) == 1:
+        for i in sn:
+            sn = i
+        if sn :
+            return sn
+    elif len(sn) > 1:
         return sn
     else:
         return None
@@ -39,9 +43,13 @@ def isLuckNumber(url):
 def isTheme_id(url):
     pattern = re.compile(r'&theme_id=(.*?)&', re.S)
     sn = re.findall(pattern, url)
-    for i in sn:
-        sn = i
-    if sn :
+    # 如果只有一个就返回一个sn的字符串，如果多个，就返回list
+    if len(sn) == 1:
+        for i in sn:
+            sn = i
+        if sn:
+            return sn
+    elif len(sn) > 1:
         return sn
     else:
         return None

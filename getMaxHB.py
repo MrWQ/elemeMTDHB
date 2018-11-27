@@ -6,7 +6,7 @@ import json
 
 
 
-# 用一个小号领取一个 使用不定长参数，这样可选参数传递
+# 用一个小号领取一个
 def getOne(db,id,url):
     # # 先判断url是否在黑名单中
     # # 如果在黑名单中
@@ -145,7 +145,7 @@ def getMAXHBbyURL(db,url):
             print("领取失败")
 
 
-# 领取到最佳前一个 主函数
+# 领取到最佳前一个 主函数  使用不定长参数，这样可选参数传递
 def getMAXHB(db,**vardict):
     # 获取db对象
     # db = MySQL.creatDBObject()
@@ -159,7 +159,8 @@ def getMAXHB(db,**vardict):
         if theme_id:
             pass
         else:
-            theme_id = input('theme_id 不存在，请输入theme_id（不知道就输入1234）：')
+            # theme_id = input('theme_id 不存在，请输入theme_id（不知道就输入1234）：')
+            theme_id = 1234
             url = url + '&theme_id=' + str(theme_id) + "&"
     # 如果传入url参数
     if vardict['url']:
