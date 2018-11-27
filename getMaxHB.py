@@ -88,7 +88,7 @@ def getOne(db,id,url):
         return int(array_length)
 
 # 传入url领取最大
-def getMAXHBbyURL(db,url):
+def getMAXHBbyURL(db,url,id=1):
     # 获取最佳手气位置
     luck_number = repy.isLuckNumber(url)
     if luck_number != None:
@@ -106,7 +106,7 @@ def getMAXHBbyURL(db,url):
         return
         # 如果不在黑名单中
     else:
-        id = 1
+        # id = 1
         arrayLength = getOne(db, id, url)
         if (arrayLength != None):
             # 数组长度 表示已经领取的数目
@@ -146,7 +146,7 @@ def getMAXHBbyURL(db,url):
 
 
 # 领取到最佳前一个 主函数  使用不定长参数，这样可选参数传递
-def getMAXHB(db,**vardict):
+def getMAXHB(db,id=1,**vardict):
     # 获取db对象
     # db = MySQL.creatDBObject()
 
@@ -166,7 +166,7 @@ def getMAXHB(db,**vardict):
     if vardict['url']:
         url = vardict['url']
     #    通过url领取最大
-    getMAXHBbyURL(db,url)
+    getMAXHBbyURL(db,url,id)
 
 
 if __name__ =='__main__':

@@ -19,10 +19,20 @@ if __name__ == '__main__':
    db = MySQL.creatDBObject()
    if(number == 1):
        url = input("输入饿了么红包链接：")
-       getMaxHB.getMAXHB(db,url=url,groupsn=None)
+       id = input('输入开始领取的cookieid（数据库第几个开始领取，默认为1）')
+       if id =='':
+           id = 1
+       else:
+           id = int(id)
+       getMaxHB.getMAXHB(db,id,url=url,groupsn=None)
    elif (number == 2):
        groupsn = input("输入饿了么红包链接groupsn（最佳输入2a07f515421c88c0&theme_id=3025&）：")
-       getMaxHB.getMAXHB(db, groupsn=groupsn,url=None)
+       id = input('输入开始领取的cookieid（数据库第几个开始领取，默认为1）')
+       if id == '':
+           id = 1
+       else:
+           id = int(id)
+       getMaxHB.getMAXHB(db,id, groupsn=groupsn,url=None)
    elif(number == 3):
        cookiestr = input("输入cookie（字符串,注意结尾要加上英文分号;）：")
        # 没有加cookie验证，因为自用肯定能输入正确cookie
@@ -130,7 +140,12 @@ if __name__ == '__main__':
        groupsnlist = repy.isSN(urls)
        for groupsn in groupsnlist:
            db = MySQL.creatDBObject()
-           getMaxHB.getMAXHB(db, groupsn=groupsn, url=None)
+           id = input('输入开始领取的cookieid（数据库第几个开始领取，默认为1）')
+           if id == '':
+               id = 1
+           else:
+               id = int(id)
+           getMaxHB.getMAXHB(db,id, groupsn=groupsn, url=None)
    else:
        print("输入数字不能识别")
 
